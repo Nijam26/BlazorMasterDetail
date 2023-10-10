@@ -1,0 +1,174 @@
+﻿@* @page "/studentform"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorMasterDetail.Shared
+
+<div class="container">
+    <h1>Student Information Form</h1>
+    <hr />
+
+    <EditForm Model="student" OnValidSubmit="OnValidSubmit">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <InputText class="form-control" id="name" @bind-Value="@student.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date Of Birth:</label>
+            <InputDate class="form-control" @bind-Value="@student.Dob" />
+        </div>
+
+        <div class="form-group">
+            <label for="fees">Fees:</label>
+            <InputNumber class="form-control" id="fees" @bind-Value="@student.Fees" />
+        </div>
+
+        <div class="form-group">
+            <label for="isactive">Is Active:</label>
+            <InputCheckbox @bind-Value="@student.IsActive" />
+        </div>
+
+        <hr />
+
+        <div class="form-group">
+            <button type="button" class="btn btn-secondary"
+            @onclick="@(() => student.Addresses.Add(new Address()))">
+                Add Address
+            </button>
+        </div>
+
+        @for (var i = 0; i < student.Addresses.Count; i++)
+        {
+            var index = i;
+            var address = student.Addresses[i];
+
+            <h5>Address @(i + 1)</h5>
+
+            <div class="form-group">
+                <label>Street:</label>
+                <InputText class="form-control" @bind-Value="address.Street" />
+            </div>
+
+            <div class="form-group">
+                <label>City:</label>
+                <InputText class="form-control" @bind-Value="address.City" />
+            </div>
+
+            <button type="button" class="btn btn-danger"
+            @onclick="@(() => student.Addresses.RemoveAt(index))">
+                Remove
+            </button>
+        }
+
+        <hr />
+
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-secondary" type="button" @onclick="Clear">Clear</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public Student student { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public string Mode { get; set; } = "Details";
+    private void Clear()
+    {
+        student = new Student();
+    }
+}
+ *@
+
+
+@page "/studentform"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorMasterDetail.Shared
+
+<div class="container">
+    <h1>Student Information Form</h1>
+    <hr />
+
+    <EditForm Model="student" OnValidSubmit="OnValidSubmit">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <InputText class="form-control" id="name" @bind-Value="@student.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date Of Birth:</label>
+            <InputDate class="form-control" @bind-Value="@student.Dob" />
+        </div>
+
+        <div class="form-group">
+            <label for="fees">Fees:</label>
+            <InputNumber class="form-control" id="fees" @bind-Value="@student.Fees" />
+        </div>
+
+        <div class="form-group">
+            <label for="isactive">Is Active:</label>
+            <InputCheckbox @bind-Value="@student.IsActive" />
+        </div>
+
+        <hr />
+
+        @if (Mode != "details")
+        {
+            <div class="form-group">
+                <button type="button" class="btn btn-secondary"
+                @onclick="@(() => student.Addresses.Add(new Address()))">
+                    Add Address
+                </button>
+            </div>
+        }
+
+        @for (var i = 0; i < student.Addresses.Count; i++)
+        {
+            var index = i;
+            var address = student.Addresses[i];
+
+            <h5>Address @(i + 1)</h5>
+
+            <div class="form-group">
+                <label>Street:</label>
+                <InputText class="form-control" @bind-Value="address.Street" />
+            </div>
+
+            <div class="form-group">
+                <label>City:</label>
+                <InputText class="form-control" @bind-Value="address.City" />
+            </div>
+
+            @if (Mode != "details")
+            {
+                <button type="button" class="btn btn-danger"
+                @onclick="@(() => student.Addresses.RemoveAt(index))">
+                    Remove
+                </button>
+            }
+        }
+
+        <hr />
+
+        @if (Mode != "details")
+        {
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <button class="btn btn-secondary" type="button" @onclick="Clear">Clear</button>
+            </div>
+        }
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public Student student { get; set; }
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public string Mode { get; set; }
+    //[Parameter] public string Mode { get; set; } = "details";
+
+    private void Clear()
+    {
+        student = new Student();
+    }
+}

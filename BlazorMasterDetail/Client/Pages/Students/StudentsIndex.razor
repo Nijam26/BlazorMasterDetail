@@ -1,0 +1,160 @@
+﻿@* @page "/students"
+@using BlazorMasterDetail.Shared;
+@inject HttpClient http
+
+<h3>Students Index</h3>
+
+<div class="form-group">
+    <a class="btn btn-success" href="students/create">New Student</a>
+</div>
+
+@if (Students == null)
+{
+    <text>There are no records to show</text>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Date Of Birth</th>
+                <th>Fess</th>
+                <th>Is Active</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Students)
+            {
+                <tr>
+                    <td>
+                        @student.Id
+                    </td>
+                    <td>
+                        @student.Name
+                    </td>
+                    <td>
+                        @student.Dob
+                    </td>
+                    <td>
+                        @student.Fees
+                    </td>
+                    <td>
+                        @student.IsActive
+                    </td>
+                    <td>
+                        <a href="students/details/@student.Id">View Details</a>
+                        <a class="btn btn-success" href="students/edit/@student.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="() => DeleteStudent(student.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+   
+}
+
+
+@code {
+    List<Student> Students { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Students = await http.GetFromJsonAsync<List<Student>>("api/students");
+    }
+
+    async Task DeleteStudent(int studentId)
+    {
+        var response = await http.DeleteAsync($"api/students/{studentId}");
+        if (response.IsSuccessStatusCode)
+        {
+
+            Students = await http.GetFromJsonAsync<List<Student>>("api/students");
+        }
+        else
+        {
+            Console.WriteLine("Not able to delete");
+        }
+
+    }
+}
+ *@
+
+
+
+@page "/students"
+@using BlazorMasterDetail.Shared
+@inject HttpClient http
+@inject IJSRuntime jsRuntime
+
+<h3>Students Index</h3>
+
+<div class="form-group">
+    <a class="btn btn-success" href="/students/create">New Student</a>
+</div>
+
+@if (Students == null)
+{
+    <p>There are no records to show</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Date Of Birth</th>
+                <th>Fees</th>
+                <th>Is Active</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Students)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.Name</td>
+                    <td>@student.Dob.ToShortDateString()</td>
+                    <td>@student.Fees</td>
+                    <td>@student.IsActive</td>
+                    <td>
+                        <a class="btn btn-info" href="students/details/@student.Id">View Details</a>
+                        <a class="btn btn-success" href="/students/edit/@student.Id">Edit</a>
+                        <button class="btn btn-danger" @onclick="() => DeleteStudent(student.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<Student> Students { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Students = await http.GetFromJsonAsync<List<Student>>("api/students");
+    }
+
+    async Task DeleteStudent(int studentId)
+    {
+        var confirmDelete = await jsRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this student?");
+
+        if (confirmDelete)
+        {
+            var response = await http.DeleteAsync($"api/students/{studentId}");
+            if (response.IsSuccessStatusCode)
+            {
+                Students = await http.GetFromJsonAsync<List<Student>>("api/students");
+            }
+            else
+            {
+                Console.WriteLine("Not able to delete");
+            }
+        }
+    }
+}
